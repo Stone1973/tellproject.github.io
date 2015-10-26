@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Tell - The architecture</title>
+        <link rel="stylesheet" type="text/css" href="/css/default.css">
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.css">
+        <link rel="stylesheet" href="/css/default.css">
+
+        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    </head>
+    <body id="tell">
+        <div class="header">
+            <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+                <ul id="menu" class="pure-menu-list">
+                    <script>
+
+
+var isLanding = false;
+var menu = 'Architecture';
+
+
+                    </script>
+                </ul>
+                <a class="pure-menu-heading"><img class="img-header" src="/images/tell-black.png"/></a>
+            </div>
+        </div>
+        <article>
+        <h1 id="architecture">Architecture</h1>
+<h2 id="overview">Overview</h2>
+<p>Tell completely decouples storage and processing. This means that the architecture consists of two layers: a storage layer and a processing layer. The processing layer runs transactions and the storage layer stores the data. A bit oversimplyfied, this is how the architecture looks like:</p>
+<div class="figure">
+<img src="/images/architecture.png" alt="architecture overview" />
+<p class="caption">architecture overview</p>
+</div>
+<p>This does not look as different as a classical partitioned database. But it is in a sense that the storage layer does not execute transactions. It only delivers data. So unlike in a partitioned database, each processing node has the full view of all data stored in the processing layer - it does not own a partition.</p>
+<p>Tell consists of several components, which are going to cover in this chapter:</p>
+<ul>
+<li>The storage nodes. These are dumb, but very fast storage nodes.</li>
+<li>The processing nodes implement the application logic and execute transactions.</li>
+<li>The commit manager makes sure that all transactions are globally ordered.</li>
+</ul>
+<h2 id="storage-nodes">Storage nodes</h2>
+<p>Unline in most other database systems, the storage nodes do not implement a lot of logic. But it is still more than a simple key-value store. The reason we don’t use a key-value store (as described in the paper) is mostly for performance. The version of Tell that used RamCloud had to fetch and write more data than necassary. Also, it is very hard to implement efficient scans over key-value pairs. It gets even more difficult as we want to push down some simple operators to the storage.</p>
+<h3 id="relations">Relations</h3>
+<p>TellStore stores relations. But unlike a traditional relational database, it does only support the most basic features. It does not check any integrity constraints, it does not have any secondary indexes, the primary key is always 8 bytes long etc. All these features have to be implemented in the upper layer. Furthermore does the storage layer not have any knowledge about transactions. But it does support atomic operations on a tuple and it can keep several versions of the same tuple.</p>
+<h3 id="versioning">Versioning</h3>
+<p>Originally Tell used RamCloud to store data. As an optimization for transactional workloads, TellStore now implements versioning. This means that a client has to deliver a read set and its own version whenever it wants to read or write a tuple.</p>
+</article>
+
+        <!-- FOOTER -->
+        <div class="ribbon l-box-lrg pure-g footer">
+            <div class="l-box-lrg is-center pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
+                <img class="pure-img-responsive" alt="ETH Zurich" height="110" src="/images/eth_logo_kurz_neg.png">
+                <img class="pure-img-responsive" alt="ETH Computer Science Departement" height="110" src="/images/eth_dinfk_logo_neg.png">
+                <img class="pure-img-responsive" alt="ETH Systems Group" height="110" src="/images/systems_logo.png">
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
+
+                <h2 class="content-head content-head-ribbon">Tell is a research project at ETH Zurich.</h2>
+
+                <p>
+                Tell is a research project from the Systems Group at ETH Zurich.
+                </p>
+                <p>
+                Tell is licensed under the Apache License Version 2.0. The code is publicly available at
+                <a href="https://github.com/tellproject/tell">GitHub</a>.
+            </div>
+        </div>
+        <script src="/js/load-menu.js"></script>
+    </body>
+</html>
